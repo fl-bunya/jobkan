@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "description": "ジョブカンの自動入力スクリプト。",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "login": "bun ./playwright/login.ts",
+    "commuting": "bun ./playwright/commuting.ts",
+    "manHour": "bun ./playwright/manHour.ts"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
