@@ -7,13 +7,11 @@ bunをinstallしておく
 https://bun.sh/docs/installation
 > ⚠️ nodeでやる人は.envを読む修正が必要かもしれない。  
 
-リポジトリをクローン。
+リポジトリをクローンし、playwrightをいれる。  
+色々聞かれるがエンター連打。
 ```
 git clone git@github.com:fl-bunya/jobkan.git
-```
-
-playwrightをいれる。色々聞かれるがエンター連打。
-```
+cd jobkan
 bun create playwright
 ```
 
@@ -25,7 +23,8 @@ bun create playwright
 bun ./playwright/login.ts
 ```
 Googleで2FA認証する。  
-ログインできたら、cmd+cで終了。  
+コンソールで`Done`が表示されたら終了。
+cmd+cで終了。  
   
 セッションがstorageState.jsonに保存される。  
 セッションが有効な内は、再ログインする必要はない。  

@@ -34,8 +34,8 @@ const storageStatePath = path.join(__dirname, '.auth/storageState.json');
   await page.getByRole('link', { name: '勤怠' }).click();
   await context.storageState({ path: storageStatePath });
 
-  console.log('ログイン完了');
+  console.log('Done.');
 
-  await context.close();
-  await browser.close();
+  // await context.close();
+  // await browser.close();
 })();
