@@ -15,7 +15,7 @@ const storageStatePath = path.join(__dirname, '.auth/storageState.json');
   await page.getByRole('link', { name: 'google Googleでログイン' }).click();
   await page.getByLabel('メールアドレスまたは電話番号').click();
   await page.getByLabel('メールアドレスまたは電話番号').fill(process.env.EMAIL || '');
-  await page.waitForTimeout(5000); // ここで待たないとbot扱いで400エラーになりがち
+  await page.waitForTimeout(3000); // ここで待たないとbot扱いで400エラーになりがち
   await page.getByLabel('メールアドレスまたは電話番号').press('Enter');
   await page.getByLabel('パスワードを入力').fill(process.env.PASSWORD || '');
   await page.getByRole('button', { name: '次へ' }).click();

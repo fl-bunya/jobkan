@@ -1,14 +1,14 @@
 {
   "name": "jobkan",
   "version": "1.0.0",
-  "description": "",
+  "description": "ジョブカンの自動入力スクリプト。",
   "main": "index.js",
   "scripts": {},
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@playwright/test": "^1.45.0",
-    "@types/node": "^20.14.9"
+    "@playwright/test": "^1.46.1",
+    "@types/node": "^22.5.1"
   }
 }
