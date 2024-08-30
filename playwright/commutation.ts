@@ -30,7 +30,7 @@ const AMOUNT = parseInt(process.env.AMOUNT || '0', 10);
   await page.locator('a').filter({ hasText: '申請する' }).click();
   await page.getByRole('heading', { name: '経費・精算 経費精算（交通費）' }).click();
   await page.getByPlaceholder('出発地を入力').click();
-  await page.waitForTimeout(200);
+  await page.waitForTimeout(300);
   await page.getByRole('textbox', { name: '利用日を入力' }).click();
   await page.getByRole('link', { name: '17' }).click();
   await page.getByPlaceholder('出発駅名を入力（前方一致）').first().fill(DEP);
@@ -61,10 +61,10 @@ const AMOUNT = parseInt(process.env.AMOUNT || '0', 10);
     // 前後月の日付がvalueとしては重複している。当月は"ng-repeat="item in days"プロパティを持つ。
     await page.locator('a[ng-repeat="item in days"]').filter({ hasText: days[i].toString() }).first().click();
     await page.getByRole('button', { name: '金額は手入力する' }).click();
-    await page.waitForTimeout(200);
+    await page.waitForTimeout(300);
     await page.getByPlaceholder('金額を入力').nth(i).fill(AMOUNT.toString());
     console.log('Day ' + days[i] + ' is set.');
-    await page.waitForTimeout(200);
+    await page.waitForTimeout(300);
   }
 
   // 終了処理

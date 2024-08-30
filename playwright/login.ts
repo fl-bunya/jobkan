@@ -15,6 +15,7 @@ const storageStatePath = path.join(__dirname, '.auth/storageState.json');
   await page.getByRole('link', { name: 'google Googleでログイン' }).click();
   await page.getByLabel('メールアドレスまたは電話番号').click();
   await page.getByLabel('メールアドレスまたは電話番号').fill(process.env.EMAIL || '');
+  await page.waitForTimeout(5000); // ここで待たないとbot扱いで400エラーになりがち
   await page.getByLabel('メールアドレスまたは電話番号').press('Enter');
   await page.getByLabel('パスワードを入力').fill(process.env.PASSWORD || '');
   await page.getByRole('button', { name: '次へ' }).click();
@@ -24,10 +25,17 @@ const storageStatePath = path.join(__dirname, '.auth/storageState.json');
   // 2FAコード入力画面の読み込みを待つ
   await page.waitForSelector('input[type="tel"]');
   console.log('2FAコードを入力してください...');
-  await page.waitForTimeout(30000); // 手動で2FAコードを入力する時間を確保
 
+  // 経費のログイン
+  await page.waitForURL('https://ssl.wf.jobcan.jp/#/', { timeout: 600000 });
   await context.storageState({ path: storageStatePath });
+
+  // 勤怠のログイン
+  await page.getByRole('link', { name: '勤怠' }).click();
+  await context.storageState({ path: storageStatePath });
+
   console.log('ログイン完了');
-  // await context.close();
-  // await browser.close();
+
+  await context.close();
+  await browser.close();
 })();
