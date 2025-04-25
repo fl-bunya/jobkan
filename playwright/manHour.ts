@@ -51,6 +51,7 @@ const COMMUTE_DAYS = [0,1,2,3,4,5,6];
 
     if (canClick) {
       await page1.getByRole('cell', { name: mmdd }).click();
+      await page.waitForTimeout(200); // 待たないとcheckがついても削除がactivateされない
       await page1.locator('#select_all').check();
       await page1.getByRole('button', { name: '削除' }).click();
       await page1.getByRole('button', { name: 'デフォルト工数を追加' }).click();
