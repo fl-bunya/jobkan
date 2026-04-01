@@ -19,12 +19,24 @@ const storageStatePath = path.join(__dirname, '.auth/storageState.json');
   await page.getByLabel('メールアドレスまたは電話番号').press('Enter');
   await page.getByLabel('パスワードを入力').fill(process.env.PASSWORD || '');
   await page.getByRole('button', { name: '次へ' }).click();
-  await page.getByLabel('電話番号').fill(process.env.TEL || '');
-  await page.getByRole('button', { name: '送信' }).click();
 
-  // 2FAコード入力画面の読み込みを待つ
-  await page.waitForSelector('input[type="tel"]');
-  console.log('2FAコードを入力してください...');
+  // 2FA: Gmail確認 or 電話番号認証の分岐
+  const gmailPrompt = page.getByText('Gmail アプリを開いてください');
+  const telLabel = page.getByLabel('電話番号');
+
+  const matched = await Promise.race([
+    gmailPrompt.waitFor({ timeout: 10000 }).then(() => 'gmail' as const),
+    telLabel.waitFor({ timeout: 10000 }).then(() => 'tel' as const),
+  ]);
+
+  if (matched === 'gmail') {
+    console.log('Gmailアプリで確認してください...');
+  } else {
+    await telLabel.fill(process.env.TEL || '');
+    await page.getByRole('button', { name: '送信' }).click();
+    await page.waitForSelector('input[type="tel"]');
+    console.log('2FAコードを入力してください...');
+  }
 
   // 経費のログイン
   await page.waitForURL('https://ssl.wf.jobcan.jp/#/', { timeout: 600000 });
