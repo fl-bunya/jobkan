@@ -38,28 +38,44 @@ const COMMUTE_DAYS = [0,1,2,3,4,5,6];
     dialog.accept().catch(() => {});
   });
 
-  // 一覧から各日へ遷移して工数を設定
-  for (let i = 0; i < days.length; i++) {
-    // await page.waitForTimeout(300);
-
-    const mmdd = targetMonth.toString().padStart(2, '0') + '/' + days[i].toString().padStart(2, '0');
-    const cell = page1.getByRole('cell', { name: mmdd });
-    const canClick = await cell.evaluate(node => {
-      const style = window.getComputedStyle(node);
-      return style.textDecoration.includes('underline');
-    });
-
+  // 一覧から「工数入力が可能な日（下線付き＝出勤あり）」を収集する
+  // NOTE: 一覧のセルは textDecoration: underline かつ cursor: pointer で表現される
+  const editableDays: number[] = [];
+  for (const day of days) {
+    const mmdd = targetMonth.toString().padStart(2, '0') + '/' + day.toString().padStart(2, '0');
+    const cell = page1.getByRole('cell', { name: mmdd, exact: true }).first();
+    const canClick = await cell
+      .evaluate(node => window.getComputedStyle(node).textDecoration.includes('underline'))
+      .catch(() => false);
     if (canClick) {
-      await page1.getByRole('cell', { name: mmdd }).click();
-      await page.waitForTimeout(200); // 待たないとcheckがついても削除がactivateされない
-      await page1.locator('#select_all').check();
-      await page1.getByRole('button', { name: '削除' }).click();
-      await page1.getByRole('button', { name: 'デフォルト工数を追加' }).click();
-      await page1.getByRole('button', { name: '保存' }).click();
-      console.log('Day ' + days[i] + ' is set.');
+      editableDays.push(day);
     } else {
-      console.log('Day ' + days[i] + ' is not clickable.');
+      console.log('Day ' + day + ' is not editable. (skip)');
     }
+  }
+
+  // 各日の編集ページへ直接遷移して工数を設定する
+  // NOTE: 2026-05-28 のジョブカン更新で保存がAJAX化し、保存後も一覧へ戻らなくなった。
+  //       そのため一覧からの遷移に依存せず、編集URLへ直接アクセスする。
+  for (const day of editableDays) {
+    const editUrl =
+      'https://ssl.jobcan.jp/employee/man-hour-manage/edit-achievement' +
+      `?year=${targetYear}&month=${targetMonth}&day=${day}&aid=`;
+    await page1.goto(editUrl);
+    await page1.waitForSelector('#add_default_manhour');
+
+    // 既存の工数行があれば全選択して削除
+    await page1.locator('#select_all').check();
+    await page1.waitForTimeout(300); // checkしても削除がactivateされるまで待つ
+    if (await page1.locator('#remove').isEnabled()) {
+      await page1.locator('#remove').click();
+    }
+
+    // デフォルト工数を追加して保存（保存はAJAXのためページ遷移しない）
+    await page1.locator('#add_default_manhour').click();
+    await page1.locator('#save').click();
+    await page1.waitForTimeout(1000); // 保存完了を待つ
+    console.log('Day ' + day + ' is set.');
   }
 
   // 終了処理
